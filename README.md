@@ -14,7 +14,7 @@ npm i puppeteer-page-proxy
 ## Example
 ```javascript
 const puppeteer = require('puppeteer');
-var useProxy = require('./puppeteer-page-proxy');
+var useProxy = require('puppeteer-page-proxy');
 
 (async () => {
     let myIp = 'https://www.expressvpn.com/what-is-my-ip';
