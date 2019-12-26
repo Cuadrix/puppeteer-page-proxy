@@ -1,5 +1,5 @@
 # puppeteer-page-proxy
-Additional module to use with 'puppeteer' for setting proxies per page basis.
+Additional Node.js module to use with '[puppeteer](https://www.npmjs.com/package/puppeteer)' for setting proxies per page basis.
 
 Uses **(http | https | socks)-proxy-agent** to achieve the desired results.
 
@@ -17,7 +17,7 @@ const puppeteer = require('puppeteer');
 var useProxy = require('puppeteer-page-proxy');
 
 (async () => {
-    let myIp = 'https://www.expressvpn.com/what-is-my-ip';
+    let site = 'https://example.com';
     let proxy1 = 'http://host:port';
     let proxy2 = 'https://host:port';
     let proxy3 = 'socks://host:port';
@@ -26,14 +26,14 @@ var useProxy = require('puppeteer-page-proxy');
 
     const page1 = await browser.newPage();
     await useProxy(page1, proxy1);
-    await page1.goto(myIp);
+    await page1.goto(site);
 
     const page2 = await browser.newPage();
     await useProxy(page2, proxy2);
-    await page2.goto(myIp);
+    await page2.goto(site);
 
     const page3 = await browser.newPage();
     await useProxy(page3, proxy3);
-    await page3.goto(myIp);
+    await page3.goto(site);
 })();
 ```
