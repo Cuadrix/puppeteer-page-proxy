@@ -1,0 +1,1 @@
+declare module "puppeteer-page-proxy";

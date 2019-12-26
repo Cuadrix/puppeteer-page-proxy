@@ -6,7 +6,7 @@ const stream = require("stream");
 const zlib = require("zlib");
 
 class RequestUtil {
-    static simple(options, handler) {
+    static async simple(options, handler) {
         options.encoding = null;
 
         const headers = {};
