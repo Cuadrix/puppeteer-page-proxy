@@ -1,0 +1,30 @@
+{
+  "name": "puppeteer-page-proxy",
+  "version": "1.0.0",
+  "description": "Additional module to use with 'puppeteer' for setting proxies per page basis.",
+  "author": "Cuadrix <cuadrix12000@gmail.com> (https://github.com/Cuadrix)",
+  "homepage": "https://github.com/Cuadrix/puppeteer-page-proxy",
+  "main": "puppeteer-page-proxy.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/Cuadrix/puppeteer-page-proxy.git"
+  },
+  "keywords": [
+    "puppeteer",
+    "page",
+    "different",
+    "proxy",
+    "headless",
+    "chromium"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "request": "^2.88.0",
+    "http-proxy-agent": "^2.1.0",
+    "https-proxy-agent": "^2.2.1",
+    "socks-proxy-agent": "^4.0.2"
+  }
+}
