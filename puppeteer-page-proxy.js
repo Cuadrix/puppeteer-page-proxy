@@ -5,6 +5,7 @@ const SocksProxyAgent = require("socks-proxy-agent");
 const stream = require("stream");
 const zlib = require("zlib");
 
+// REF: https://github.com/xiyuan-fengyu/ppspider/tree/master/src/common/util/RequestUtil.ts
 class RequestUtil {
     static async simple(options, handler) {
         options.encoding = null;
@@ -111,6 +112,7 @@ class RequestUtil {
     }
 }
 
+// REF: https://github.com/xiyuan-fengyu/ppspider/blob/master/src/puppeteer/PuppeteerUtil.ts
 module.exports = async function useProxy(page, proxy, enableCache = true) {
     page["_proxy"] = proxy;
     page["_enableCacheInProxy"] = enableCache;
