@@ -1,9 +1,9 @@
-const request = require("request");
-const HttpProxyAgent = require("http-proxy-agent");
-const HttpsProxyAgent = require("https-proxy-agent");
-const SocksProxyAgent = require("socks-proxy-agent");
-const stream = require("stream");
-const zlib = require("zlib");
+const request = require( "request");
+const HttpProxyAgent = require ("http-proxy-agent");
+const HttpsProxyAgent = require ("https-proxy-agent");
+const SocksProxyAgent = require ("socks-proxy-agent");
+const { PassThrough } = require("stream");
+const { createGunzip, createInflate } = require("zlib");
 
 // REF: https://github.com/xiyuan-fengyu/ppspider/tree/master/src/common/util/RequestUtil.ts
 class RequestUtil {
@@ -62,15 +62,15 @@ class RequestUtil {
                         body: res["body"] || Buffer.from([])
                     };
                     if (simpleRes.body.length) {
-                        let bodyPipe = new stream.PassThrough();
+                        let bodyPipe = new PassThrough();
                         const contentEncodings = (res.headers["content-encoding"] || "").split(/, ?/).filter(item => item != "").reverse();
                         for (let contentEncoding of contentEncodings) {
                             switch (contentEncoding) {
                                 case "gzip":
-                                    bodyPipe = bodyPipe.pipe(zlib.createGunzip());
+                                    bodyPipe = bodyPipe.pipe(createGunzip());
                                     break;
                                 case "deflate":
-                                    bodyPipe = bodyPipe.pipe(zlib.createInflate());
+                                    bodyPipe = bodyPipe.pipe(createInflate());
                                     break;
                             }
                         }
