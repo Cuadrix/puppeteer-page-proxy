@@ -11,29 +11,35 @@ All credit for the original code goes to the author [@xiyuan-fengyu](https://git
 ```
 npm i puppeteer-page-proxy
 ```
-## Example
+## Examples
+#### General usage:
 ```javascript
 const puppeteer = require('puppeteer');
 var useProxy = require('puppeteer-page-proxy');
 
 (async () => {
     let site = 'https://example.com';
-    let proxy1 = 'http://host:port';
-    let proxy2 = 'https://host:port';
-    let proxy3 = 'socks://host:port';
-
     const browser = await puppeteer.launch({headless: false});
 
     const page1 = await browser.newPage();
-    await useProxy(page1, proxy1);
+    await useProxy(page1, 'http://host:port');
     await page1.goto(site);
 
     const page2 = await browser.newPage();
-    await useProxy(page2, proxy2);
+    await useProxy(page2, 'https://host:port');
     await page2.goto(site);
 
     const page3 = await browser.newPage();
-    await useProxy(page3, proxy3);
+    await useProxy(page3, 'socks://host:port');
     await page3.goto(site);
 })();
+```
+#### Reassign proxy of a page:
+```javascript
+const page1 = await browser.newPage();
+await useProxy(page1, 'http://my-host:port');
+await page1.goto(site);
+
+await useProxy(page1, 'socks://:another-host:port', false);
+await page1.goto(site);
 ```
