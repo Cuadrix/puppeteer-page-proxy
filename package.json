@@ -1,6 +1,6 @@
 {
   "name": "puppeteer-page-proxy",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Additional Node.js module to use with 'puppeteer' for setting proxies per page basis.",
   "author": "Cuadrix <cuadrix12000@gmail.com> (https://github.com/Cuadrix)",
   "homepage": "https://github.com/Cuadrix/puppeteer-page-proxy",
