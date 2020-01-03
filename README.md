@@ -38,12 +38,3 @@ var useProxy = require('puppeteer-page-proxy');
     await page3.goto(site);
 })();
 ```
-#### Reassign proxy of a page:
-```javascript
-const page1 = await browser.newPage();
-await useProxy(page1, 'http://host:port');
-await page1.goto(site);
-
-await useProxy(page1, 'socks://another-host:port', false);
-await page1.goto(site);
-```
