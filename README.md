@@ -27,7 +27,7 @@ npm i puppeteer-page-proxy
 * `timeout` <[number](https://developer.mozilla.org/en-US/docs/Glossary/Number)|[string](https://developer.mozilla.org/en-US/docs/Glossary/String)> Time in milliseconds after which the request times out. Defaults to `30000` ms.
 * returns: <[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)> Promise which resolves to the response of the lookup request.
 
-**NOTE:** This method expects a response in [JSON](https://en.wikipedia.org/wiki/JSON#Example) format. To change it to plain text, set `isJSON` to `false`.
+**NOTE:** By default this method expects a response in [JSON](https://en.wikipedia.org/wiki/JSON#Example) format and [JSON.parse](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse)'s it to a usable javascript object. To disable this functionality, set `isJSON` to `false`.
     
 ## Examples
 #### General usage:
