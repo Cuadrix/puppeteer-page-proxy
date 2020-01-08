@@ -69,14 +69,14 @@ const useProxy = require('puppeteer-page-proxy');
     /**1*/
     const page1 = await browser.newPage();
     await useProxy(page1, proxy1);
-    let data = await useProxy.lookup(page); // Waits until done, "then" continues
+    let data = await useProxy.lookup(page1); // Waits until done, "then" continues
         console.log(data.ip);
     await page1.goto(site);
     
     /**2*/
     const page2 = await browser.newPage();
     await useProxy(page2, proxy2);
-    useProxy.lookup(page).then(data => {   // Executes and "comes back" once done
+    useProxy.lookup(page2).then(data => {   // Executes and "comes back" once done
         console.log(data.ip);
     });
     await page2.goto(site);
