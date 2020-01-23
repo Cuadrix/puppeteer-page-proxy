@@ -43,7 +43,7 @@ const useProxy = require('puppeteer-page-proxy');
     
     // For proxies that require authentication
     //  pass in the username and password in the format shown below
-    let proxy4 = 'https://login:pass@host:port'
+    let proxy4 = 'https://login:pass@host:port';
     
     const browser = await puppeteer.launch({headless: false});
 
