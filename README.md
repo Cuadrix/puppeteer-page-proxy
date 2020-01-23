@@ -41,6 +41,10 @@ const useProxy = require('puppeteer-page-proxy');
     let proxy2 = 'https://host:port';
     let proxy3 = 'socks://host:port';
     
+    // For proxies that require authentication
+    //  pass in the username and password in the format shown below
+    let proxy4 = 'https://login:pass@ip:port'
+    
     const browser = await puppeteer.launch({headless: false});
 
     const page1 = await browser.newPage();
@@ -54,6 +58,10 @@ const useProxy = require('puppeteer-page-proxy');
     const page3 = await browser.newPage();
     await useProxy(page3, proxy3);
     await page3.goto(site);
+    
+    const page4 = await browser.newPage();
+    await useProxy(page4, proxy4);
+    await page4.goto(site);
 })();
 ```
 #### Lookup IP used by proxy -> Useful in headless environment:
