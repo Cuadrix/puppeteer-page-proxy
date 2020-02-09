@@ -1,4 +1,9 @@
 # Change log
+### [1.2.2] - 2020-02-09
+#### Patches
+- Fixed code indentation.
+- Updated examples.
+- Optimization.
 ### [1.2.0] - 2020-02-09
 #### Major changes
 - Added capability to change proxy per request.
