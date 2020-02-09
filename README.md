@@ -20,7 +20,7 @@ npm i puppeteer-page-proxy
 - `pageOrReq` <[object](https://developer.mozilla.org/en-US/docs/Glossary/Object)> 'Page' or 'Request' object to set a proxy for.
 - `proxy` <[string](https://developer.mozilla.org/en-US/docs/Glossary/String)> Proxy to use in the current page.
   * Begins with a protocol (e.g. http://, https://, socks://)
-
+  
 #### PageProxy.lookup(page[, lookupService, isJSON, timeout])
 
 - `page` <[object](https://developer.mozilla.org/en-US/docs/Glossary/Object)> 'Page' object to execute the request on.
@@ -56,7 +56,7 @@ const useProxy = require('puppeteer-page-proxy');
     await page2.goto(site);
 })();
 ```
-#
+
 #### Proxy per request:
 ```js
 const puppeteer = require('puppeteer');
@@ -94,12 +94,12 @@ Since all requests can be handled exactly once, it's not possible to call other 
 
 **NOTE:** It is necessary to set [page.setRequestInterception](https://github.com/puppeteer/puppeteer/blob/master/docs/api.md#pagesetrequestinterceptionvalue) to true when setting proxies this way, otherwise the function will fail.
 
-#
+
 #### Authentication:
 ```js
 const proxy = 'https://login:pass@host:port';
 ```
-#
+
 #### Lookup IP used by proxy:
 ```js
 const puppeteer = require('puppeteer');
@@ -128,6 +128,7 @@ const useProxy = require('puppeteer-page-proxy');
     await page2.goto(site);
 })();
 ```
+
 ## Dependencies
 - [Got](https://github.com/sindresorhus/got)
 - [http-proxy-agent](https://github.com/TooTallNate/node-http-proxy-agent)
