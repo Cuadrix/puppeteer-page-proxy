@@ -10,7 +10,7 @@ module.exports = async (param, proxy) => {
     ); validateProxy(proxy);
     /**/
     let page, req;
-    if (param.constructor.name === "Request"){
+    if (param.constructor.name === "Request") {
         req = param;
     }
     else if (param.constructor.name === "Page") {

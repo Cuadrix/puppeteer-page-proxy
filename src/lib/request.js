@@ -24,10 +24,10 @@ module.exports = class RequestCore {
     static setAgent(url, proxy) {
         if (proxy.startsWith("socks")) {
             return new SocksProxyAgent(proxy);
-        } 
+        }
         else if (url.startsWith("https")) {
             return new HttpsProxyAgent(proxy);
-        }  else {
+        } else {
             return new HttpProxyAgent(proxy);
         }
     }
