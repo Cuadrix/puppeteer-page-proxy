@@ -35,7 +35,7 @@ npm i puppeteer-page-proxy
 **NOTE:** By default this method expects a response in [JSON](https://en.wikipedia.org/wiki/JSON#Example) format and [JSON.parse](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse)'s it to a usable javascript object. To disable this functionality, set `isJSON` to `false`.
     
 ## Examples
-### Proxy per page:
+#### > Proxy per page:
 ```js
 const puppeteer = require('puppeteer');
 const useProxy = require('puppeteer-page-proxy');
@@ -65,7 +65,7 @@ await useProxy(page, proxy2);
 await page.reload();
 ```
 #
-### Proxy per request:
+#### > Proxy per request:
 ```js
 const puppeteer = require('puppeteer');
 const useProxy = require('puppeteer-page-proxy');
@@ -104,11 +104,11 @@ Internally `puppeteer-page-proxy` handles the request which was passed in, then 
 **NOTE:** Since all requests can be handled exactly once, it's not possible to call other interception methods e.g. [request.abort()](https://github.com/puppeteer/puppeteer/blob/master/docs/api.md#requestaborterrorcode), [request.continue()](https://github.com/puppeteer/puppeteer/blob/master/docs/api.md#requestcontinueoverrides) after calling `useProxy()`, without getting a *'Request is already handled!'* error message.
 
 #
-#### Authentication:
+#### > Authentication:
 ```js
 const proxy = 'https://login:pass@host:port';
 ```
-#### Lookup IP used by proxy -> Useful in headless environment:
+#### > Lookup IP used by proxy -> Useful in headless environment:
 ```js
 const puppeteer = require('puppeteer');
 const useProxy = require('puppeteer-page-proxy');
