@@ -19,7 +19,7 @@ npm i puppeteer-page-proxy
 
 - `pageOrReq` <[object](https://developer.mozilla.org/en-US/docs/Glossary/Object)> 'Page' or 'Request' object to set a proxy for.
 - `proxy` <[string](https://developer.mozilla.org/en-US/docs/Glossary/String)> Proxy to use in the current page.
-  * Begins with a protocol e.g. **http://**, **https://**, **socks://**
+  * Begins with a protocol (e.g. http://, https://, socks://)
 
 #### PageProxy.lookup(page[, lookupService, isJSON, timeout])
 
@@ -99,7 +99,8 @@ Since all requests can be handled exactly once, it's not possible to call other 
 ```js
 const proxy = 'https://login:pass@host:port';
 ```
-#### Lookup IP used by proxy -> Useful in headless environment:
+#
+#### Lookup IP used by proxy:
 ```js
 const puppeteer = require('puppeteer');
 const useProxy = require('puppeteer-page-proxy');
