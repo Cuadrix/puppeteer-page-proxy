@@ -25,17 +25,17 @@ npm i puppeteer-page-proxy
 
 - `page` <[object](https://developer.mozilla.org/en-US/docs/Glossary/Object)> 'Page' object to execute the request on.
 - `lookupService` <[string](https://developer.mozilla.org/en-US/docs/Glossary/String)> External lookup service to request data from.
-  * Fetches data from `api.ipify.org` by default.
+  * Fetches data from **api.ipify.org** by default.
 - `isJSON` <[boolean](https://developer.mozilla.org/en-US/docs/Glossary/Boolean)> Whether to [JSON.parse](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse) the received response.
-  * Defaults to `true`.
+  * Defaults to **true**.
 - `timeout` <[number](https://developer.mozilla.org/en-US/docs/Glossary/Number)|[string](https://developer.mozilla.org/en-US/docs/Glossary/String)> Time in milliseconds after which the request times out.
-  * Defaults to `30000` ms.
+  * Defaults to **30000**.
 - returns: <[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)> Promise which resolves to the response of the lookup request.
 
 **NOTE:** By default this method expects a response in [JSON](https://en.wikipedia.org/wiki/JSON#Example) format and [JSON.parse](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse)'s it to a usable javascript object. To disable this functionality, set `isJSON` to `false`.
     
 ## Examples
-#### > Proxy per page:
+#### Proxy per page:
 ```js
 const puppeteer = require('puppeteer');
 const useProxy = require('puppeteer-page-proxy');
@@ -56,16 +56,8 @@ const useProxy = require('puppeteer-page-proxy');
     await page2.goto(site);
 })();
 ```
-#### Changing proxy if a page is already using one:
-```js
-await useProxy(page, proxy);
-await page.goto(site, {waitUntil: 'networkidle2'});
-
-await useProxy(page, proxy2);
-await page.reload();
-```
 #
-#### > Proxy per request:
+#### Proxy per request:
 ```js
 const puppeteer = require('puppeteer');
 const useProxy = require('puppeteer-page-proxy');
@@ -78,8 +70,8 @@ const useProxy = require('puppeteer-page-proxy');
     const page = await browser.newPage();
 
     await page.setRequestInterception(true);
-    page.on('request', async req => {
-        await useProxy(req, proxy); // 'req' as argument
+    page.on('request', req => {
+        useProxy(req, proxy); // 'req' as argument
     });
     await page.goto(site);
 })();
@@ -87,28 +79,27 @@ const useProxy = require('puppeteer-page-proxy');
 When changing proxies this way, the request object itself is passed as the first argument. Now 'proxy' can be changed every request.
 Leaving it as is will have the same effect as `useProxy(page, proxy)`, meaning that the same proxy will be used for all requests within the page.
 
-**NOTE:** It is necessary [page.setRequestInterception()](https://github.com/puppeteer/puppeteer/blob/master/docs/api.md#pagesetrequestinterceptionvalue) to true, otherwise the function will fail.
-#### Using with other request listeners:
+Using it in other request listeners is also straight forward:
 ```js
 await page.setRequestInterception(true);
-page.on('request', async req => {
-	if (req.resourceType() === 'image') {
-		req.abort();
-	} else {
-		await useProxy(req, proxy);
-	}
+page.on('request', req => {
+    if (req.resourceType() === 'image') {
+        req.abort();
+    } else {
+        useProxy(req, proxy);
+    }
 });
 ```
-Internally `puppeteer-page-proxy` handles the request which was passed in, then responds back to the browser using the interception method [request.respond()](https://github.com/puppeteer/puppeteer/blob/master/docs/api.md#requestrespondresponse). Calling this method will fulfill the request with a given response and set the proxy.
+Since all requests can be handled exactly once, it's not possible to call other interception methods (e.g. [request.abort](https://github.com/puppeteer/puppeteer/blob/master/docs/api.md#requestaborterrorcode), [request.continue](https://github.com/puppeteer/puppeteer/blob/master/docs/api.md#requestcontinueoverrides)) after calling `useProxy`, without getting a *'Request is already handled!'* error message. This is because `puppeteer-page-proxy` internally calls [request.respond](https://github.com/puppeteer/puppeteer/blob/master/docs/api.md#requestrespondresponse) which fulfills the request.
 
-**NOTE:** Since all requests can be handled exactly once, it's not possible to call other interception methods e.g. [request.abort()](https://github.com/puppeteer/puppeteer/blob/master/docs/api.md#requestaborterrorcode), [request.continue()](https://github.com/puppeteer/puppeteer/blob/master/docs/api.md#requestcontinueoverrides) after calling `useProxy()`, without getting a *'Request is already handled!'* error message.
+**NOTE:** It is necessary to set [page.setRequestInterception](https://github.com/puppeteer/puppeteer/blob/master/docs/api.md#pagesetrequestinterceptionvalue) to true when setting proxies this way, otherwise the function will fail.
 
 #
-#### > Authentication:
+#### Authentication:
 ```js
 const proxy = 'https://login:pass@host:port';
 ```
-#### > Lookup IP used by proxy -> Useful in headless environment:
+#### Lookup IP used by proxy -> Useful in headless environment:
 ```js
 const puppeteer = require('puppeteer');
 const useProxy = require('puppeteer-page-proxy');
