@@ -1,5 +1,5 @@
-module.exports = class CDP {
-    static async Send(ws, command) {
+const cdp = {
+    async _send(ws, command) {
         ws.send(JSON.stringify(command));
         return new Promise(resolve => {
             ws.on("message", function handler(msg) {
@@ -10,10 +10,10 @@ module.exports = class CDP {
                 }
             });
         });
-    }
-    static Target = {
-        attachToTarget: async (ws, targetId) => {
-            const result = (await this.Send(ws, {
+    },
+    Target: {
+        async attachToTarget(ws, targetId) {
+            const result = (await cdp._send(ws, {
                 id: 1,
                 method: "Target.attachToTarget",
                 params: {
@@ -25,10 +25,10 @@ module.exports = class CDP {
                 return result.sessionId;
             }
         }
-    };
-    static Network = {
-        getCookies: async (ws, sessionId) => {
-            const result = (await this.Send(ws, {
+    },
+    Network: {
+        async getCookies(ws, sessionId) {
+            const result = (await cdp._send(ws, {
                 sessionId,
                 id: 2,
                 method: "Network.getCookies"
@@ -37,5 +37,6 @@ module.exports = class CDP {
                 return result.cookies;
             }
         }
-    };
-}
+    }
+};
+module.exports = cdp;

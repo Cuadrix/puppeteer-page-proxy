@@ -1,10 +1,8 @@
-const enforceTypes = require("../util/type-enforcer");
+const enforceTypes = require("type-dragoon");
 
-module.exports = async (page, lookupService = "https://api.ipify.org?format=json", isJSON = true, timeout = 30000) => {
+const lookup = async (page, lookupService = "https://api.ipify.org?format=json", isJSON = true, timeout = 30000) => {
     /**/
-    enforceTypes(
-        [page, "object"], [lookupService, "string"], [isJSON, "boolean"], [timeout, "number"]
-    );
+    enforceTypes({object: page}, {string: lookupService}, {boolean: isJSON}, {number: timeout});
     /**/
     const XMLHttpRequest = async () => {
         return await page.evaluate((lookupService, timeout, isJSON) => {
@@ -41,4 +39,5 @@ module.exports = async (page, lookupService = "https://api.ipify.org?format=json
             return await XMLHttpRequest();
         }
     }
-}
+};
+module.exports = lookup;

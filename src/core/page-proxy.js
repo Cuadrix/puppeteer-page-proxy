@@ -1,28 +1,21 @@
 const {setHeaders, setAgent, request} = require("../lib/request");
 const cookies = require("../lib/cookies");
-const enforceTypes = require("../util/type-enforcer");
-const validateProxy = require("../util/proxy-validator");
+const enforceTypes = require("type-dragoon");
 
-module.exports = async (param, proxy) => {
+const pageProxy = async (param, proxy) => {
     /**/
-    enforceTypes(
-        [param, "object"], [proxy, "string"]
-    ); validateProxy(proxy);
+    enforceTypes({object: param});
     /**/
     let page, req;
     if (param.constructor.name === "Request") {
         req = param;
-    }
-    else if (param.constructor.name === "Page") {
+    } else if (param.constructor.name === "Page") {
         page = param;
         await page.setRequestInterception(true);
     } else {
-        throw new Error("@arg1: Not valid 'Page' or 'Request' object");
+        throw new Error("Not valid `Page` or `Request` object");
     }
     const $puppeteerPageProxyHandler = async req => {
-        if (req._interceptionHandled || !req._allowInterception) {
-            return;
-        }
         const cookieJar = cookies.store(await cookies.get(
             req._client._connection._url, req._frame._id
         ));
@@ -43,13 +36,23 @@ module.exports = async (param, proxy) => {
             await req.abort();
         }
     };
+    const removeRequestListener = () => {
+        const listeners = page.listeners("request");
+        for (let i = 0; i < listeners.length; i++) {
+            if (listeners[i].name === "$puppeteerPageProxyHandler") {
+                page.removeListener("request", listeners[i]);
+            }
+        }
+    };
     if (req) {
         $puppeteerPageProxyHandler(req);
     } else {
-        for (const listener of page.listeners("request")) {
-            if (listener.name === "$puppeteerPageProxyHandler") {
-                page.removeListener("request", listener);
-            }
-        }; page.on("request", $puppeteerPageProxyHandler);
+        removeRequestListener();
+        if (proxy) {
+            page.on("request", $puppeteerPageProxyHandler);
+        } else {
+            await page.setRequestInterception(false);
+        }
     }
-}
+};
+module.exports = pageProxy;

@@ -3,8 +3,8 @@ const HttpProxyAgent = require("http-proxy-agent");
 const HttpsProxyAgent = require("https-proxy-agent");
 const SocksProxyAgent = require("socks-proxy-agent");
 
-module.exports = class RequestCore {
-    static setHeaders(req) {
+const request = {
+    setHeaders(req) {
         const headers = {
             ...req.headers(),
             "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
@@ -20,8 +20,8 @@ module.exports = class RequestCore {
             headers["sec-fetch-site"] = "same-origin";
         }
         return headers;
-    }
-    static setAgent(url, proxy) {
+    },
+    setAgent(url, proxy) {
         if (proxy.startsWith("socks")) {
             return new SocksProxyAgent(proxy);
         }
@@ -30,8 +30,8 @@ module.exports = class RequestCore {
         } else {
             return new HttpProxyAgent(proxy);
         }
-    }
-    static async request(url, options) {
+    },
+    async request(url, options) {
         try {
             const res = await got(url, options);
             return {
@@ -39,8 +39,9 @@ module.exports = class RequestCore {
                 headers: res.headers,
                 body: res.body,
             };
-        } catch (error) {
+        } catch(error) {
             throw new Error(error);
         }
     }
-}
+};
+module.exports = request;

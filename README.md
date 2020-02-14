@@ -56,6 +56,10 @@ const useProxy = require('puppeteer-page-proxy');
     await page2.goto(site);
 })();
 ```
+To remove a proxy set this way, simply pass a falsy value (e.g `null`) instead of the proxy;
+```js
+await useProxy(page, null);
+```
 
 #### Proxy per request:
 ```js

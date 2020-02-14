@@ -2,8 +2,8 @@ const WebSocket = require("ws");
 const {CookieJar} = require("tough-cookie");
 const {Target, Network} = require("./cdp");
 
-module.exports = class Cookies {
-    static async get(endpoint, targetId) {
+const cookies = {
+    async get(endpoint, targetId) {
         const ws = new WebSocket(endpoint, {
             perMessageDeflate: false,
             maxPayload: 180 * 4096 // 0.73728Mb
@@ -12,8 +12,8 @@ module.exports = class Cookies {
         /* Attach to target then get cookies */
         const sessionId = await Target.attachToTarget(ws, targetId);
         return await Network.getCookies(ws, sessionId);
-    };
-    static store(cookies) {
+    },
+    store(cookies) {
         if (!cookies) {
             return;
         }
@@ -32,9 +32,10 @@ module.exports = class Cookies {
                     httpOnly: cookie.httpOnly,
                     sameSite: cookie.sameSite,
                     creation: new Date().toISOString(),
-                    hostOnly: !cookie.domain.match(/^\./)
+                    hostOnly: !(/^\./).test(cookie.domain)
                 };
             })
         });
-    };
+    }
 };
+module.exports = cookies;
