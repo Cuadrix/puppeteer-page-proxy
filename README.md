@@ -1,4 +1,4 @@
-# puppeteer-page-proxy <img src="https://i.ibb.co/kQrN9QJ/puppeteer-page-proxy-logo.png" align="right" width=150 height=150/>
+# puppeteer-page-proxy
 Additional Node.js module to use with **[puppeteer](https://www.npmjs.com/package/puppeteer)** for setting proxies per page basis.
 
 Forwards intercepted requests from the browser to Node.js where it handles the request then returns the response to the browser, changing the proxy as a result.
