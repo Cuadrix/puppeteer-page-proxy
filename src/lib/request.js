@@ -24,14 +24,14 @@ const request = {
     setAgent(url, proxy) {
         if (proxy.startsWith("socks")) {
             return {
-				http: new SocksProxyAgent(proxy),
-				https: new SocksProxyAgent(proxy)
-			}
+                http: new SocksProxyAgent(proxy),
+                https: new SocksProxyAgent(proxy)
+            }
         } else {
             return {
-				http: new HttpProxyAgent(proxy),
-				https: new HttpsProxyAgent(proxy)
-			}
+                http: new HttpProxyAgent(proxy),
+                https: new HttpsProxyAgent(proxy)
+            }
         }
     },
     async request(url, options) {
