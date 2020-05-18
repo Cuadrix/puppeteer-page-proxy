@@ -3,8 +3,6 @@ Additional Node.js module to use with **[puppeteer](https://www.npmjs.com/packag
 
 Forwards intercepted requests from the browser to Node.js where it handles the request then returns the response to the browser, changing the proxy as a result.
 
-## [Currently updating to work with latest dependencies]
-
 ## Features
 
 - Proxy per page **and** per request
