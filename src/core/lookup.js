@@ -1,9 +1,4 @@
-const enforceTypes = require("type-dragoon");
-
 const lookup = async (page, lookupService = "https://api.ipify.org?format=json", isJSON = true, timeout = 30000) => {
-    /**/
-    enforceTypes({object: page}, {string: lookupService}, {boolean: isJSON}, {number: timeout});
-    /**/
     const XMLHttpRequest = async () => {
         return await page.evaluate((lookupService, timeout, isJSON) => {
             return new Promise(resolve => {

@@ -1,24 +1,21 @@
 const {setHeaders, setAgent, request} = require("../lib/request");
 const cookies = require("../lib/cookies");
-const enforceTypes = require("type-dragoon");
 
 const pageProxy = async (param, proxy) => {
-    /**/
-    enforceTypes({object: param});
-    /**/
     let page, req;
     if (param.constructor.name === "Request") {
         req = param;
     } else if (param.constructor.name === "Page") {
         page = param;
         await page.setRequestInterception(true);
-    } else {
-        throw new Error("Not valid `Page` or `Request` object");
     }
+	// Responsible for forward requesting using proxy
     const $puppeteerPageProxyHandler = async req => {
-        const cookieJar = cookies.store(await cookies.get(
-            req._client._connection._url, req._frame._id
-        ));
+		endpoint = req._client._connection._url;
+		targetId = req._frame._id;
+        const cookieJar = cookies.store(
+			await cookies.get(endpoint, targetId)
+		);
         const options = {
             cookieJar,
             method: req.method(),
@@ -36,6 +33,7 @@ const pageProxy = async (param, proxy) => {
             await req.abort();
         }
     };
+	// Remove existing listener for reassigning proxy of current page
     const removeRequestListener = () => {
         const listeners = page.listeners("request");
         for (let i = 0; i < listeners.length; i++) {

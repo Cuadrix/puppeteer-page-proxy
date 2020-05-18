@@ -23,12 +23,15 @@ const request = {
     },
     setAgent(url, proxy) {
         if (proxy.startsWith("socks")) {
-            return new SocksProxyAgent(proxy);
-        }
-        else if (url.startsWith("https")) {
-            return new HttpsProxyAgent(proxy);
+            return {
+				http: new SocksProxyAgent(proxy),
+				https: new SocksProxyAgent(proxy)
+			}
         } else {
-            return new HttpProxyAgent(proxy);
+            return {
+				http: new HttpProxyAgent(proxy),
+				https: new HttpsProxyAgent(proxy)
+			}
         }
     },
     async request(url, options) {
@@ -37,7 +40,7 @@ const request = {
             return {
                 status: res.statusCode,
                 headers: res.headers,
-                body: res.body,
+                body: res.body
             };
         } catch(error) {
             throw new Error(error);

@@ -1,4 +1,9 @@
 # Change log
+### [1.2.4] - 2020-05-18
+#### Changes
+- Fix 'net::ERR_FAILED' by updating package to work with latest Got ([#16](https://github.com/Cuadrix/puppeteer-page-proxy/issues/16), [#14](https://github.com/Cuadrix/puppeteer-page-proxy/issues/14))
+- Added an explanation addressing site insecurity ([#9](https://github.com/Cuadrix/puppeteer-page-proxy/issues/9), [#12](https://github.com/Cuadrix/puppeteer-page-proxy/issues/12))
+- Removed type enforcing
 ### [1.2.3] - 2020-02-14
 #### Changes
 - Added ability to remove page-wide proxy

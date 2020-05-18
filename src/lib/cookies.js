@@ -9,7 +9,7 @@ const cookies = {
             maxPayload: 180 * 4096 // 0.73728Mb
         });
         await new Promise(resolve => ws.once("open", resolve));
-        /* Attach to target then get cookies */
+        // Attach to target then get cookies
         const sessionId = await Target.attachToTarget(ws, targetId);
         return await Network.getCookies(ws, sessionId);
     },
@@ -18,7 +18,7 @@ const cookies = {
             return;
         }
         return CookieJar.deserializeSync({
-            version: 'tough-cookie@3.0.1',
+            version: 'tough-cookie@4.0.0',
             storeType: 'MemoryCookieStore',
             rejectPublicSuffixes: true,
             cookies: cookies.map((cookie) => {

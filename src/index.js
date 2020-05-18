@@ -1,2 +1,2 @@
-module.exports = require("./core/page-proxy");
+module.exports = require("./core/proxy");
 module.exports.lookup = require("./core/lookup");
