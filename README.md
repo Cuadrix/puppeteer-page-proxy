@@ -164,7 +164,7 @@ This happens when there is an attempt to handle the same request more than once.
 Because direct requests from the browser to the server are being intercepted by Node, making the establishment of a secure connection between them impossible. However, the requests aren't made by the browser, they are made by Node. All `https` requests made through Node using this module are secure. This is evidenced by the connection property of the response object:
 
 
-```json
+```
 connection: TLSSocket {
     _tlsOptions: {
         secureContext: [SecureContext],
