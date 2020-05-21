@@ -3,7 +3,7 @@ const {CookieJar} = require("tough-cookie");
 const {Target, Network} = require("./cdp");
 
 const cookies = {
-    async get(endpoint, targetId) {
+    async getCookies(endpoint, targetId) {
         const ws = new WebSocket(endpoint, {
             perMessageDeflate: false,
             maxPayload: 180 * 4096 // 0.73728Mb
@@ -13,10 +13,9 @@ const cookies = {
         const sessionId = await Target.attachToTarget(ws, targetId);
         return await Network.getCookies(ws, sessionId);
     },
-    store(cookies) {
-        if (!cookies) {
+    cookieStore(cookies) {
+        if (!cookies)
             return;
-        }
         return CookieJar.deserializeSync({
             version: 'tough-cookie@4.0.0',
             storeType: 'MemoryCookieStore',

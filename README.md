@@ -18,8 +18,11 @@ npm i puppeteer-page-proxy
 #### PageProxy(pageOrReq, proxy)
 
 - `pageOrReq` <[object](https://developer.mozilla.org/en-US/docs/Glossary/Object)> 'Page' or 'Request' object to set a proxy for.
-- `proxy` <[string](https://developer.mozilla.org/en-US/docs/Glossary/String)> Proxy to use in the current page.
+- `proxy` <[string](https://developer.mozilla.org/en-US/docs/Glossary/String)|[object](https://developer.mozilla.org/en-US/docs/Glossary/Object)> Proxy to use in the current page.
   * Begins with a protocol (e.g. http://, https://, socks://)
+  * In the case of [proxy per request](https://github.com/Cuadrix/puppeteer-page-proxy#proxy-per-request), this can be an object with optional properites for overriding requests:\
+`url`, `method`, `postData`, `headers`\
+See [request.continue](https://github.com/puppeteer/puppeteer/blob/master/docs/api.md#requestcontinueoverrides) for more info about the above properties.
   
 #### PageProxy.lookup(page[, lookupService, isJSON, timeout])
 
@@ -34,7 +37,7 @@ npm i puppeteer-page-proxy
 
 **NOTE:** By default this method expects a response in [JSON](https://en.wikipedia.org/wiki/JSON#Example) format and [JSON.parse](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse)'s it to a usable javascript object. To disable this functionality, set `isJSON` to `false`.
     
-## Examples
+## Usage
 #### Proxy per page:
 ```js
 const puppeteer = require('puppeteer');
@@ -56,7 +59,7 @@ const useProxy = require('puppeteer-page-proxy');
     await page2.goto(site);
 })();
 ```
-To remove a proxy set this way, simply pass a falsy value (e.g `null`) instead of the proxy;
+To remove proxy, omit or pass in falsy value (e.g `null`):
 ```js
 await useProxy(page, null);
 ```
@@ -74,30 +77,43 @@ const useProxy = require('puppeteer-page-proxy');
     const page = await browser.newPage();
 
     await page.setRequestInterception(true);
-    page.on('request', req => {
-        useProxy(req, proxy);
+    page.on('request', async req => {
+        await useProxy(req, proxy);
     });
     await page.goto(site);
 })();
 ```
 The request object itself is passed as the first argument. The proxy can now be changed every request.
-Leaving it as is will have the same effect as applying a proxy for the whole page by passing in the page object as an argument. Basically, the same proxy will be used for all requests within the page.
 
-Using it with other interception methods is straight forward aswell:
+Using it along with other interception methods:
 ```js
 await page.setRequestInterception(true);
-page.on('request', req => {
+page.on('request', async req => {
     if (req.resourceType() === 'image') {
         req.abort();
     } else {
-        useProxy(req, proxy);
+        await useProxy(req, proxy);
     }
 });
 ```
-All requests can be handled exactly once, so it's not possible to intercept the same request after a proxy has been applied to it. This means that it will not be possible to call (e.g. [request.abort](https://github.com/puppeteer/puppeteer/blob/master/docs/api.md#requestaborterrorcode), [request.continue](https://github.com/puppeteer/puppeteer/blob/master/docs/api.md#requestcontinueoverrides)) on the same request without getting a *'Request is already handled!'* error message. This is because `puppeteer-page-proxy` internally calls [request.respond](https://github.com/puppeteer/puppeteer/blob/master/docs/api.md#requestrespondresponse) which fulfills the request.
 
-**NOTE:** It is necessary to set [page.setRequestInterception](https://github.com/puppeteer/puppeteer/blob/master/docs/api.md#pagesetrequestinterceptionvalue) to true when setting proxies this way, otherwise the function will fail.
+Overriding requests:
+```js
+await page.setRequestInterception(true);
+page.on('request', async req => {
+    await useProxy(req, {
+        proxy: proxy,
+        url: 'https://example.com',
+        method: 'POST',
+        postData: '404',
+        headers: {
+            accept: 'text/html'
+        }
+    });
+});
+```
 
+**NOTE:** It is necessary to set [page.setRequestInterception](https://github.com/puppeteer/puppeteer/blob/master/docs/api.md#pagesetrequestinterceptionvalue) to true when setting proxies per request, otherwise the function will fail.
 
 #### Authentication:
 ```js
@@ -134,16 +150,21 @@ const useProxy = require('puppeteer-page-proxy');
 ```
 
 ## FAQ
-#### How does puppeteer-page-proxy work?
+#### How does this module work?
 
-It takes over the task of requesting resources from the browser to instead do it internally. This means that the requests that the browser is usually supposed to make directly, are instead intercepted and made indirectly via Node using a requests library. This naturally means that Node also receives the responses that the browser would have normally received from those requests. For changing the proxy, the requests are routed through the specified proxy server using ***-proxy-agent**'s. The responses are then forwarded back to the browser as mock/simulated responses using the [request.respond](https://github.com/puppeteer/puppeteer/blob/master/docs/api.md#requestrespondresponse) method, making the browser think that a response has been received from the server, thus fulfilling the request and rendering any content from the response onto the screen.
+It takes over the task of requesting content **from** the browser to do it internally via a requests library instead. Requests that are normally made by the browser, are thus made by Node. The IP's are changed by routing the requests through the specified proxy servers using ***-proxy-agent's**. When Node gets a response back from the server, it's forwarded to the browser for completion/rendering.
 
-#### Why does the browser show _"Your connection to this site is not secure"_ when connecting to **https** sites?
+#### Why am I getting _"Request is already handled!"_?
 
-This is simply because the server and the browser are unable perform the secure handshakes for the connections due to the requests being intercepted and effectively blocked by Node when forwarding responses to the browser. However, despite the browser alerting of an insecure connection, the requests are infact made securely through Node as seen from the connection property of the response object:
+This happens when there is an attempt to handle the same request more than once. An intercepted request is handled by either [request.abort](https://github.com/puppeteer/puppeteer/blob/master/docs/api.md#requestaborterrorcode), [request.continue](https://github.com/puppeteer/puppeteer/blob/master/docs/api.md#requestcontinueoverrides) or [request.respond](https://github.com/puppeteer/puppeteer/blob/master/docs/api.md#requestrespondresponse) methods. Each of these methods 'send' the request to its destination. A request that has already reached its destination cannot be intercepted or handled.
 
 
-```
+#### Why does the browser show _"Your connection to this site is not secure"_?
+
+Because direct requests from the browser to the server are being intercepted by Node, making the establishment of a secure connection between them impossible. However, the requests aren't made by the browser, they are made by Node. All `https` requests made through Node using this module are secure. This is evidenced by the connection property of the response object:
+
+
+```json
 connection: TLSSocket {
     _tlsOptions: {
         secureContext: [SecureContext],
@@ -155,7 +176,7 @@ connection: TLSSocket {
     encrypted: true,
 }
 ```
-While a proxy is applied, the browser is just an empty drawing board used for rendering content on the screen. All the network requests and responses, both secure and non-secure, are made by Node. Because of this, it makes no difference whether the site in the browser is shown as insecure or not.
+You can think of the warning as a false positive.
 
 ## Dependencies
 - [Got](https://github.com/sindresorhus/got)

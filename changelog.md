@@ -1,4 +1,8 @@
 # Change log
+### [1.2.5] - 2020-05-21
+#### Changes
+- Added ability to override requests
+- Increase redirect restriction ([#17](https://github.com/Cuadrix/puppeteer-page-proxy/issues/17))
 ### [1.2.4] - 2020-05-18
 #### Changes
 - Fix 'net::ERR_FAILED' by updating package to work with latest Got ([#16](https://github.com/Cuadrix/puppeteer-page-proxy/issues/16), [#14](https://github.com/Cuadrix/puppeteer-page-proxy/issues/14))

@@ -30,9 +30,8 @@ const lookup = async (page, lookupService = "https://api.ipify.org?format=json",
         }
         return await XMLHttpRequest();
     } catch(error) {
-        if (error.message === "Execution context was destroyed, most likely because of a navigation." || error.message === "Execution context was destroyed.") {
+        if (error.message === "Execution context was destroyed, most likely because of a navigation." || error.message === "Execution context was destroyed.")
             return await XMLHttpRequest();
-        }
     }
 };
 module.exports = lookup;

@@ -21,9 +21,7 @@ const cdp = {
                     flatten: true,
                 }
             })).result;
-            if (result) {
-                return result.sessionId;
-            }
+            return (result) ? result.sessionId : undefined;
         }
     },
     Network: {
@@ -33,9 +31,7 @@ const cdp = {
                 id: 2,
                 method: "Network.getCookies"
             })).result;
-            if (result) {
-                return result.cookies;
-            }
+            return (result) ? result.cookies : undefined;
         }
     }
 };
