@@ -41,7 +41,7 @@ const useProxy = async (target, proxy) => {
         }
     };
     // Proxy per request
-    if (target.constructor.name === "Request") {
+    if (target.constructor.name.indexOf("Request")!=-1) {
         if (type(proxy) == "object") {
             target = setOverrides(target, proxy);
             proxy = proxy.proxy;
