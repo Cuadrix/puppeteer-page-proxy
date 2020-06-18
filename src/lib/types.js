@@ -22,10 +22,10 @@
     "[object BigInt64Array]": "array",
     "[object BigUint64Array]": "array"
 };
-const util = {
-    type(value) {
-        const type = Object.prototype.toString.call(value);
-        return (map[type] === undefined) ? "object" : map[type];
-    }
-};
-module.exports = util;
+
+const type = (value) => {
+    const type = Object.prototype.toString.call(value);
+    return (map[type] === undefined) ? "object" : map[type];
+}
+
+module.exports = type;

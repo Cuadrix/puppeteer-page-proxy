@@ -1,64 +1,81 @@
 const request = require("got");
-const {type} = require("../lib/types");
-const {getCookies, cookieStore} = require("../lib/cookies");
+const type = require("../lib/types");
+const cookieJar = require("../lib/cookies");
 const {setOverrides, setHeaders, setAgent} = require("../lib/options");
 
-const useProxy = async (target, proxy) => {
-    // Listener responsible for applying proxy
-    const $puppeteerPageProxyHandler = async req => {       
-        endpoint = req._client._connection._url;
-        targetId = req._frame._id;
-        const cookieJar = cookieStore(
-            await getCookies(endpoint, targetId)
-        );
-        const options = {
-            cookieJar,
-            method: req.method(),
-            body: req.postData(),
-            headers: setHeaders(req),
-            agent: setAgent(proxy),
-            responseType: "buffer",
-            throwHttpErrors: false
-        };
-        try {
-            const res = await request(req.url(), options);
-            await req.respond({
-                status: res.statusCode,
-                headers: res.headers,
-                body: res.body
-            });
-        } catch(error) {
-            await req.abort();
-        }
+// Responsible for applying proxy
+const proxyHandler = async (req, proxy) => {
+    const options = {
+        cookieJar,
+        method: req.method(),
+        body: req.postData(),
+        headers: setHeaders(req),
+        agent: setAgent(proxy),
+        responseType: "buffer",
+        maxRedirects: 15,
+        throwHttpErrors: false
     };
-    // Remove existing listener for reassigning proxy of current page
-    const removeRequestListener = (page, listenerName) => {
-        const listeners = page.listeners("request");
-        for (let i = 0; i < listeners.length; i++) {
-            if (listeners[i].name === listenerName) {
-                page.removeListener("request", listeners[i]);
-            }
-        }
-    };
-    // Proxy per request
-    if (target.constructor.name.indexOf("Request")!=-1) {
-        if (type(proxy) == "object") {
-            target = setOverrides(target, proxy);
-            proxy = proxy.proxy;
-        }
-        await $puppeteerPageProxyHandler(target);
-    // Page-wide proxy
-    } else if (target.constructor.name === "Page") {
-        if (type(proxy) == "object") {
-            proxy = proxy.proxy;
-        }
-        await target.setRequestInterception(true);
-        removeRequestListener(target, "$puppeteerPageProxyHandler");
-        if (proxy) {
-            target.on("request", $puppeteerPageProxyHandler);
-        } else {
-            await target.setRequestInterception(false);
+    try {
+        const res = await request(req.url(), options);
+        await req.respond({
+            status: res.statusCode,
+            headers: res.headers,
+            body: res.body
+        });
+    } catch(error) {await req.abort()}
+};
+
+// For reassigning proxy of page
+const removeRequestListener = (page, listenerName) => {
+    const eventName = "request";
+    const listeners = page.eventsMap.get(eventName);
+    if (listeners) {
+        const i = listeners.findIndex((listener) => {
+            return listener.name === listenerName
+        });
+        listeners.splice(i, 1);
+        if (!listeners.length) {
+            page.eventsMap.delete(eventName);
         }
     }
 };
+
+// Calls this if request object passed
+const proxyPerRequest = async (req, data) => {
+    let proxy, overrides;
+    // Separate proxy and overrides
+    if (type(data) === "object") {
+        if (Object.keys(data).length !== 0) {
+            proxy = data.proxy;
+            delete data.proxy;
+            overrides = data;
+        }
+    } else {proxy = data}
+    req = setOverrides(req, overrides);
+    // Skip request if proxy omitted
+    if (proxy) {await proxyHandler(req, proxy)}
+    else {req.continue(overrides)}
+};
+
+// Calls this if page object passed
+const proxyPerPage = async (page, proxy) => {
+    await page.setRequestInterception(true);
+    removeRequestListener(page, "$ppp");
+    if (proxy) {
+        page.on("request", $ppp = async (req) => {
+            await proxyHandler(req, proxy);
+        });
+    } else {await page.setRequestInterception(false)}
+};
+
+// Main function
+const useProxy = async (target, data) => {
+    const targetType = target.constructor.name;
+    if (targetType === "HTTPRequest") {
+        await proxyPerRequest(target, data);
+    } else if (targetType === "Page") {
+        await proxyPerPage(target, data)
+    }
+};
+
 module.exports = useProxy;

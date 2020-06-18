@@ -1,4 +1,8 @@
 # Change log
+### [1.2.6] - 2020-06-18
+#### Changes
+- Updated for Puppeteer's v4.0.0 [breaking changes](https://github.com/puppeteer/puppeteer/releases/tag/v4.0.0) ([#22](https://github.com/Cuadrix/puppeteer-page-proxy/issues/22), [#23](https://github.com/Cuadrix/puppeteer-page-proxy/issues/23))
+- Modified cookie handling to fix ([#20](https://github.com/Cuadrix/puppeteer-page-proxy/issues/20)) among other cookie related errors
 ### [1.2.5] - 2020-05-21
 #### Changes
 - Added ability to override requests
