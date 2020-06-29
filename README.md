@@ -5,10 +5,10 @@ Forwards intercepted requests from the browser to Node.js where it handles the r
 
 ## Features
 
-- Proxy per page **and** per request
-- Supports **(** http, https, socks4, socks5 **)** proxies
-- Authentication
-- Cookie handling internally
+- Proxy per page and proxy per request
+- Supports **http**, **https**, **socks4** and **socks5** proxies
+- Supports authentication
+- Handles cookies
 
 ## Installation
 ```
@@ -20,9 +20,9 @@ npm i puppeteer-page-proxy
 - `pageOrReq` <[object](https://developer.mozilla.org/en-US/docs/Glossary/Object)> 'Page' or 'Request' object to set a proxy for.
 - `proxy` <[string](https://developer.mozilla.org/en-US/docs/Glossary/String)|[object](https://developer.mozilla.org/en-US/docs/Glossary/Object)> Proxy to use in the current page.
   * Begins with a protocol (e.g. http://, https://, socks://)
-  * In the case of [proxy per request](https://github.com/Cuadrix/puppeteer-page-proxy#proxy-per-request), this can be an object with optional properites for overriding requests:\
+  * In the case of [proxy per request](https://github.com/Cuadrix/puppeteer-page-proxy#proxy-per-request), this can be an object with optional properties for overriding requests:\
 `url`, `method`, `postData`, `headers`\
-See [request.continue](https://github.com/puppeteer/puppeteer/blob/master/docs/api.md#requestcontinueoverrides) for more info about the above properties.
+See [httpRequest.continue](https://github.com/puppeteer/puppeteer/blob/main/docs/api.md#httprequestcontinueoverrides) for more info about the above properties.
   
 #### PageProxy.lookup(page[, lookupService, isJSON, timeout])
 
@@ -38,26 +38,14 @@ See [request.continue](https://github.com/puppeteer/puppeteer/blob/master/docs/a
 **NOTE:** By default this method expects a response in [JSON](https://en.wikipedia.org/wiki/JSON#Example) format and [JSON.parse](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse)'s it to a usable javascript object. To disable this functionality, set `isJSON` to `false`.
     
 ## Usage
+#### Importing:
+```js
+const useProxy = require('puppeteer-page-proxy');
+```
+
 #### Proxy per page:
 ```js
-const puppeteer = require('puppeteer');
-const useProxy = require('puppeteer-page-proxy');
-
-(async () => {
-    const site = 'https://example.com';
-    const proxy = 'http://host:port';
-    const proxy2 = 'https://host:port';
-    
-    const browser = await puppeteer.launch({headless: false});
-
-    const page = await browser.newPage();
-    await useProxy(page, proxy);
-    await page.goto(site);
-
-    const page2 = await browser.newPage();
-    await useProxy(page2, proxy2);
-    await page2.goto(site);
-})();
+await useProxy(page, 'http://127.0.0.1:80');
 ```
 To remove proxy, omit or pass in falsy value (e.g `null`):
 ```js
@@ -66,33 +54,21 @@ await useProxy(page, null);
 
 #### Proxy per request:
 ```js
-const puppeteer = require('puppeteer');
-const useProxy = require('puppeteer-page-proxy');
-
-(async () => {
-    const site = 'https://example.com';
-    const proxy = 'socks://host:port';
-
-    const browser = await puppeteer.launch({headless: false});
-    const page = await browser.newPage();
-
-    await page.setRequestInterception(true);
-    page.on('request', async req => {
-        await useProxy(req, proxy);
-    });
-    await page.goto(site);
-})();
+await page.setRequestInterception(true);
+page.on('request', async request => {
+    await useProxy(request, 'https://127.0.0.1:443');
+});
 ```
 The request object itself is passed as the first argument. The proxy can now be changed every request.
 
 Using it along with other interception methods:
 ```js
 await page.setRequestInterception(true);
-page.on('request', async req => {
+page.on('request', async request => {
     if (req.resourceType() === 'image') {
         req.abort();
     } else {
-        await useProxy(req, proxy);
+        await useProxy(request, 'socks4://127.0.0.1:1080');
     }
 });
 ```
@@ -100,9 +76,9 @@ page.on('request', async req => {
 Overriding requests:
 ```js
 await page.setRequestInterception(true);
-page.on('request', async req => {
-    await useProxy(req, {
-        proxy: proxy,
+page.on('request', async request => {
+    await useProxy(request, {
+        proxy: 'socks5://127.0.0.1:1080',
         url: 'https://example.com',
         method: 'POST',
         postData: '404',
@@ -113,40 +89,29 @@ page.on('request', async req => {
 });
 ```
 
-**NOTE:** It is necessary to set [page.setRequestInterception](https://github.com/puppeteer/puppeteer/blob/master/docs/api.md#pagesetrequestinterceptionvalue) to true when setting proxies per request, otherwise the function will fail.
+**NOTE:** It is necessary to set [page.setRequestInterception](https://github.com/puppeteer/puppeteer/blob/main/docs/api.md#pagesetrequestinterceptionvalue) to true when setting proxies per request, otherwise the function will fail.
 
-#### Authentication:
+#### Authenticating:
 ```js
-const proxy = 'https://login:pass@host:port';
+const proxy = 'https://user:pass@host:port';
 ```
 
-#### Lookup IP used by proxy:
+#### IP lookup:
 ```js
-const puppeteer = require('puppeteer');
-const useProxy = require('puppeteer-page-proxy');
-
-(async () => {
-    const site = 'https://example.com';
-    const proxy1 = 'http://host:port';
-    const proxy2 = 'https://host:port';
+// 1. Waits until done, 'then' continues
+const data = await useProxy.lookup(page1);
+    console.log(data.ip);
     
-    const browser = await puppeteer.launch({headless: false});
-
-    // 1
-    const page1 = await browser.newPage();
-    await useProxy(page1, proxy1);
-    let data = await useProxy.lookup(page1); // Waits until done, 'then' continues
-        console.log(data.ip);
-    await page1.goto(site);
-    
-    // 2
-    const page2 = await browser.newPage();
-    await useProxy(page2, proxy2);
-    useProxy.lookup(page2).then(data => {   // Executes and 'comes back' once done
-        console.log(data.ip);
-    });
-    await page2.goto(site);
-})();
+// 2. Executes and 'comes back' once done
+useProxy.lookup(page2).then(data => {
+    console.log(data.ip);
+});
+```
+In case of any [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) errors, use `--disable-web-security` launch flag:
+```js
+const browser = await puppeteer.launch({
+    args: ['--disable-web-security']
+});
 ```
 
 ## FAQ
@@ -156,7 +121,7 @@ It takes over the task of requesting content **from** the browser to do it inter
 
 #### Why am I getting _"Request is already handled!"_?
 
-This happens when there is an attempt to handle the same request more than once. An intercepted request is handled by either [request.abort](https://github.com/puppeteer/puppeteer/blob/master/docs/api.md#requestaborterrorcode), [request.continue](https://github.com/puppeteer/puppeteer/blob/master/docs/api.md#requestcontinueoverrides) or [request.respond](https://github.com/puppeteer/puppeteer/blob/master/docs/api.md#requestrespondresponse) methods. Each of these methods 'send' the request to its destination. A request that has already reached its destination cannot be intercepted or handled.
+This happens when there is an attempt to handle the same request more than once. An intercepted request is handled by either [httpRequest.abort](https://github.com/puppeteer/puppeteer/blob/main/docs/api.md#httprequestaborterrorcode), [httpRequest.continue](https://github.com/puppeteer/puppeteer/blob/main/docs/api.md#httprequestcontinueoverrides) or [httpRequest.respond](https://github.com/puppeteer/puppeteer/blob/main/docs/api.md#httprequestrespondresponse) methods. Each of these methods 'send' the request to its destination. A request that has already reached its destination cannot be intercepted or handled.
 
 
 #### Why does the browser show _"Your connection to this site is not secure"_?

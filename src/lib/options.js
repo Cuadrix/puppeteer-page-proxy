@@ -2,39 +2,16 @@ const HttpProxyAgent = require("http-proxy-agent");
 const HttpsProxyAgent = require("https-proxy-agent");
 const SocksProxyAgent = require("socks-proxy-agent");
 
-// For overriding request objects
-const setOverrides = (req, overrides) => {
-    const map = {
-        url: true,
-        method: true,
-        postData: true,
-        headers: true
-    };
-    for (const key in overrides) {
-        if (map[key]) {
-            if (key === "headers") {
-                req["$" + key] = () => overrides[key];
-            } else {
-                req[key] = () => overrides[key];
-            }
-        }
-    }
-    return req;
-};
-
-// Some extra headers
-const setHeaders = (req) => {
-    // If headers have been overriden
-    if (req.$headers)
-        return req.$headers();
-    // Extended default headers
+// Set some extra headers because Puppeteer doesn't capture all request headers
+// Related: https://github.com/puppeteer/puppeteer/issues/5364
+const setHeaders = (request) => {
     const headers = {
-        ...req.headers(),
+        ...request.headers(),
         "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
         "accept-encoding": "gzip, deflate, br",
-        "host": new URL(req.url()).hostname
+        "host": new URL(request.url()).hostname
     }
-    if (req.isNavigationRequest()) {
+    if (request.isNavigationRequest()) {
         headers["sec-fetch-mode"] = "navigate";
         headers["sec-fetch-site"] = "none";
         headers["sec-fetch-user"] = "?1";
@@ -59,4 +36,4 @@ const setAgent = (proxy) => {
     };
 };
 
-module.exports = {setOverrides, setHeaders, setAgent};
+module.exports = {setHeaders, setAgent};

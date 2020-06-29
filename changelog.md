@@ -1,4 +1,9 @@
 # Change log
+### [1.2.7] - 2020-06-30
+#### Changes
+- Reimplement cookie handling to account for deletion and addition of browser cookies
+- Changed default lookup fetch source to **api64.ipify.org**
+- Update documentation
 ### [1.2.6] - 2020-06-18
 #### Changes
 - Updated for Puppeteer's v4.0.0 [breaking changes](https://github.com/puppeteer/puppeteer/releases/tag/v4.0.0) ([#22](https://github.com/Cuadrix/puppeteer-page-proxy/issues/22), [#23](https://github.com/Cuadrix/puppeteer-page-proxy/issues/23))

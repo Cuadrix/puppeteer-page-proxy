@@ -1,28 +1,41 @@
-const request = require("got");
-const type = require("../lib/types");
-const cookieJar = require("../lib/cookies");
-const {setOverrides, setHeaders, setAgent} = require("../lib/options");
+const got = require("got");
+const CookieHandler = require("../lib/cookies");
+const {setHeaders, setAgent} = require("../lib/options");
+const type = require("../util/types");
 
 // Responsible for applying proxy
-const proxyHandler = async (req, proxy) => {
+const requestHandler = async (request, proxy, overrides = {}) => {
+    // Reject non http(s) URI schemes
+    if (!request.url().startsWith("http") && !request.url().startsWith("https")) {
+        request.continue(); return;
+    }
+    const cookieHandler = new CookieHandler(request);
+    // Request options for Got accounting for overrides
     const options = {
-        cookieJar,
-        method: req.method(),
-        body: req.postData(),
-        headers: setHeaders(req),
+        cookieJar: await cookieHandler.getCookies(),
+        method: overrides.method || request.method(),
+        body: overrides.postData || request.postData(),
+        headers: overrides.headers || setHeaders(request),
         agent: setAgent(proxy),
         responseType: "buffer",
         maxRedirects: 15,
         throwHttpErrors: false
     };
     try {
-        const res = await request(req.url(), options);
-        await req.respond({
-            status: res.statusCode,
-            headers: res.headers,
-            body: res.body
+        const response = await got(overrides.url || request.url(), options);
+        // Set cookies manually because "set-cookie" doesn't set all cookies (?)
+        // Perhaps related to https://github.com/puppeteer/puppeteer/issues/5364
+        const setCookieHeader = response.headers["set-cookie"];
+        if (setCookieHeader) {
+            await cookieHandler.setCookies(setCookieHeader);
+            response.headers["set-cookie"] = undefined;
+        }
+        await request.respond({
+            status: response.statusCode,
+            headers: response.headers,
+            body: response.body
         });
-    } catch(error) {await req.abort()}
+    } catch(error) {await request.abort()}
 };
 
 // For reassigning proxy of page
@@ -41,7 +54,7 @@ const removeRequestListener = (page, listenerName) => {
 };
 
 // Calls this if request object passed
-const proxyPerRequest = async (req, data) => {
+const proxyPerRequest = async (request, data) => {
     let proxy, overrides;
     // Separate proxy and overrides
     if (type(data) === "object") {
@@ -51,21 +64,21 @@ const proxyPerRequest = async (req, data) => {
             overrides = data;
         }
     } else {proxy = data}
-    req = setOverrides(req, overrides);
     // Skip request if proxy omitted
-    if (proxy) {await proxyHandler(req, proxy)}
-    else {req.continue(overrides)}
+    if (proxy) {await requestHandler(request, proxy, overrides)}
+    else {request.continue(overrides)}
 };
 
 // Calls this if page object passed
 const proxyPerPage = async (page, proxy) => {
     await page.setRequestInterception(true);
-    removeRequestListener(page, "$ppp");
-    if (proxy) {
-        page.on("request", $ppp = async (req) => {
-            await proxyHandler(req, proxy);
-        });
-    } else {await page.setRequestInterception(false)}
+    const listener = "$ppp_request_listener";
+    removeRequestListener(page, listener);
+    const f = {[listener]: async (request) => {
+        await requestHandler(request, proxy);
+    }};
+    if (proxy) {page.on("request", f[listener])}
+    else {await page.setRequestInterception(false)}
 };
 
 // Main function
@@ -74,7 +87,7 @@ const useProxy = async (target, data) => {
     if (targetType === "HTTPRequest") {
         await proxyPerRequest(target, data);
     } else if (targetType === "Page") {
-        await proxyPerPage(target, data)
+        await proxyPerPage(target, data);
     }
 };
 
