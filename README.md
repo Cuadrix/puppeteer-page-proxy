@@ -65,8 +65,8 @@ Using it along with other interception methods:
 ```js
 await page.setRequestInterception(true);
 page.on('request', async request => {
-    if (req.resourceType() === 'image') {
-        req.abort();
+    if (request.resourceType() === 'image') {
+        request.abort();
     } else {
         await useProxy(request, 'socks4://127.0.0.1:1080');
     }
