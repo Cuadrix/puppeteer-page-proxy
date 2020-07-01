@@ -23,7 +23,7 @@ declare namespace puppeteer_page_proxy {
  * console.log(data.ip);
  * ```
  * @param page 'Page' object to execute the request on.
- * @param lookupService External lookup service to request data from. Fetches data from `api.ipify.org` by default.
+ * @param lookupService External lookup service to request data from. Fetches data from `api64.ipify.org` by default.
  * @param isJSON Whether to JSON.parse the received response. Defaults to `true`.
  * @param timeout Time in milliseconds after which the request times out. Defaults to `30000` ms.
  */
