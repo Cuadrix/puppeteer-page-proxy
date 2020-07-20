@@ -35,7 +35,10 @@ const requestHandler = async (request, proxy, overrides = {}) => {
             headers: response.headers,
             body: response.body
         });
-    } catch(error) {await request.abort()}
+    } catch (error) {
+        console.error(error)
+        await request.abort();
+    }
 };
 
 // For reassigning proxy of page
