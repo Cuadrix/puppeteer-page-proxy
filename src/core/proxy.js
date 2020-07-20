@@ -19,7 +19,11 @@ const requestHandler = async (request, proxy, overrides = {}) => {
         agent: setAgent(proxy),
         responseType: "buffer",
         maxRedirects: 15,
-        throwHttpErrors: false
+        throwHttpErrors: false,
+        ignoreInvalidCookies:
+            typeof overrides.ignoreInvalidCookies === "undefined"
+                ? false
+                : overrides.ignoreInvalidCookies
     };
     try {
         const response = await got(overrides.url || request.url(), options);
