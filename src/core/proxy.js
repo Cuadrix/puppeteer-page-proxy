@@ -23,7 +23,8 @@ const requestHandler = async (request, proxy, overrides = {}) => {
         ignoreInvalidCookies:
             typeof overrides.ignoreInvalidCookies === "undefined"
                 ? false
-                : overrides.ignoreInvalidCookies
+                : overrides.ignoreInvalidCookies,
+        followRedirect: false
     };
     try {
         const response = await got(overrides.url || request.url(), options);
