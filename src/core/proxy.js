@@ -40,8 +40,8 @@ const requestHandler = async (request, proxy, overrides = {}) => {
             body: response.body
         });
     } catch (error) {
-        console.error(error)
         await request.abort();
+        throw error;
     }
 };
 
