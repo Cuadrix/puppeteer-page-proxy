@@ -20,10 +20,7 @@ const requestHandler = async (request, proxy, overrides = {}) => {
         responseType: "buffer",
         maxRedirects: 15,
         throwHttpErrors: false,
-        ignoreInvalidCookies:
-            typeof overrides.ignoreInvalidCookies === "undefined"
-                ? false
-                : overrides.ignoreInvalidCookies,
+        ignoreInvalidCookies: true,
         followRedirect: false
     };
     try {
@@ -42,7 +39,6 @@ const requestHandler = async (request, proxy, overrides = {}) => {
         });
     } catch (error) {
         await request.abort();
-        throw error;
     }
 };
 

@@ -21,7 +21,7 @@ npm i puppeteer-page-proxy
 - `proxy` <[string](https://developer.mozilla.org/en-US/docs/Glossary/String)|[object](https://developer.mozilla.org/en-US/docs/Glossary/Object)> Proxy to use in the current page.
   * Begins with a protocol (e.g. http://, https://, socks://)
   * In the case of [proxy per request](https://github.com/Cuadrix/puppeteer-page-proxy#proxy-per-request), this can be an object with optional properties for overriding requests:\
-`url`, `method`, `postData`, `headers`, `ignoreInvalidCookies`\
+`url`, `method`, `postData`, `headers`\
 See [httpRequest.continue](https://github.com/puppeteer/puppeteer/blob/main/docs/api.md#httprequestcontinueoverrides) for more info about the above properties.
   
 #### PageProxy.lookup(page[, lookupService, isJSON, timeout])
