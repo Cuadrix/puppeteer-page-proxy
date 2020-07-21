@@ -1,4 +1,8 @@
 # Change log
+### [1.2.8] - 2020-07-21
+#### Changes
+- Fixed silent failure when there was an invalid host in the cookies set by the server ([#32](https://github.com/Cuadrix/puppeteer-page-proxy/issues/32))
+- Fixed Page URL not updating in Puppeteer when there was a server-side redirect (via location header)
 ### [1.2.7] - 2020-06-30
 #### Changes
 - Reimplement cookie handling to account for deletion and addition of browser cookies
