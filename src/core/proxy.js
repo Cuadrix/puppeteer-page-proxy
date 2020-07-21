@@ -19,7 +19,9 @@ const requestHandler = async (request, proxy, overrides = {}) => {
         agent: setAgent(proxy),
         responseType: "buffer",
         maxRedirects: 15,
-        throwHttpErrors: false
+        throwHttpErrors: false,
+        ignoreInvalidCookies: true,
+        followRedirect: false
     };
     try {
         const response = await got(overrides.url || request.url(), options);
@@ -35,7 +37,9 @@ const requestHandler = async (request, proxy, overrides = {}) => {
             headers: response.headers,
             body: response.body
         });
-    } catch(error) {await request.abort()}
+    } catch (error) {
+        await request.abort();
+    }
 };
 
 // For reassigning proxy of page
