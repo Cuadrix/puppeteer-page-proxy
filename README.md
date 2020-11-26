@@ -96,6 +96,16 @@ page.on('request', async request => {
 const proxy = 'https://user:pass@host:port';
 ```
 
+Using socks authentication:
+```js
+const proxyOptions = {
+  protocol: 'socks5:',
+  auth: 'myUserName:p4$$w0rd',
+  host: '127.0.0.1',
+  port: 1080,
+}
+await useProxy(page, proxyOptions)
+```
 #### IP lookup:
 ```js
 // 1. Waits until done, 'then' continues
