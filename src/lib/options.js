@@ -24,7 +24,7 @@ const setHeaders = (request) => {
 
 // For applying proxy
 const setAgent = (proxy) => {
-    if (proxy.startsWith("socks")) {
+    if (typeof proxy === 'object' || proxy.startsWith("socks")) {
         return {
             http: new SocksProxyAgent(proxy),
             https: new SocksProxyAgent(proxy)
