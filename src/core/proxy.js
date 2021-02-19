@@ -63,9 +63,9 @@ const proxyPerRequest = async (request, data) => {
     // Separate proxy and overrides
     if (type(data) === "object") {
         if (Object.keys(data).length !== 0) {
-            proxy = data.proxy;
-            delete data.proxy;
-            overrides = data;
+            const { proxy: dataProxy, ...dataOverrides };
+            proxy = dataProxy;
+            overrides = dataOverrides;
         }
     } else {proxy = data}
     // Skip request if proxy omitted
