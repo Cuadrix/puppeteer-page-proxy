@@ -63,7 +63,7 @@ const proxyPerRequest = async (request, data) => {
     // Separate proxy and overrides
     if (type(data) === "object") {
         if (Object.keys(data).length !== 0) {
-            const { proxy: dataProxy, ...dataOverrides };
+            const { proxy: dataProxy, ...dataOverrides } = data;
             proxy = dataProxy;
             overrides = dataOverrides;
         }
