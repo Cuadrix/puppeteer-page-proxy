@@ -24,7 +24,8 @@ const requestHandler = async (request, proxy, overrides = {}) => {
         followRedirect: false,
         https: {
 			rejectUnauthorized: 
-                overrides.https && overrides.https.rejectUnauthorized ? overrides.https.rejectUnauthorized : true
+                overrides.https && typeof overrides.https.rejectUnauthorized === "boolean" ? 
+                  overrides.https.rejectUnauthorized : true
 		}
     };
     try {
