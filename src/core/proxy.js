@@ -23,7 +23,8 @@ const requestHandler = async (request, proxy, overrides = {}) => {
         ignoreInvalidCookies: true,
         followRedirect: false,
         https: {
-			rejectUnauthorized: overrides.https?.rejectUnauthorized ?? true
+			rejectUnauthorized: 
+                overrides.https && overrides.https.rejectUnauthorized ? overrides.https.rejectUnauthorized : true
 		}
     };
     try {
