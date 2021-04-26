@@ -21,7 +21,10 @@ const requestHandler = async (request, proxy, overrides = {}) => {
         maxRedirects: 15,
         throwHttpErrors: false,
         ignoreInvalidCookies: true,
-        followRedirect: false
+        followRedirect: false,
+        https: {
+			rejectUnauthorized: overrides.https?.rejectUnauthorized ?? true
+		}
     };
     try {
         const response = await got(overrides.url || request.url(), options);
