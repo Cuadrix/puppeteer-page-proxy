@@ -43,6 +43,7 @@ const requestHandler = async (request, proxy, overrides = {}) => {
             body: response.body
         });
     } catch (error) {
+        console.error("proxy requestHandler error caught:", error)
         await request.abort();
     }
 };
