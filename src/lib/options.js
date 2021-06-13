@@ -6,8 +6,10 @@ const SocksProxyAgent = require("socks-proxy-agent");
 // Related: https://github.com/puppeteer/puppeteer/issues/5364
 const setHeaders = (request) => {
     const headers = {
-        ...request.headers(),
+        // Our 'accept' header should not overwrite Puppeteer's because that can cause issues
+        // on sites like Indigo
         "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+        ...request.headers(),
         "accept-encoding": "gzip, deflate, br",
         "host": new URL(request.url()).hostname
     }
