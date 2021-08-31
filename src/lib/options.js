@@ -1,5 +1,6 @@
 const HttpProxyAgent = require("http-proxy-agent");
 const HttpsProxyAgent = require("https-proxy-agent");
+const Http2OverHttps = require('http2-wrapper').proxies.Http2OverHttps;
 const SocksProxyAgent = require("socks-proxy-agent");
 
 // Set some extra headers because Puppeteer doesn't capture all request headers
@@ -32,7 +33,12 @@ const setAgent = (proxy) => {
     }
     return {
         http: new HttpProxyAgent(proxy),
-        https: new HttpsProxyAgent(proxy)
+        https: new HttpsProxyAgent(proxy),
+        http2: new Http2OverHttps({
+            proxyOptions: {
+                url: proxy
+            },
+        })
     };
 };
 

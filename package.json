@@ -24,6 +24,7 @@
   "dependencies": {
     "got": "^11.5.1",
     "http-proxy-agent": "^4.0.1",
+    "http2-wrapper": "^2.1.8",
     "https-proxy-agent": "^5.0.0",
     "socks-proxy-agent": "^5.0.0",
     "tough-cookie": "^4.0.0"
