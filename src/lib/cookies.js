@@ -108,19 +108,19 @@ class CookieHandler extends CDP {
         }
         // Store cookies in the browser
         const cleanedCookies = browserCookies.reduce((cookies, cookie) => {
-            if (cookie.name !== "") {
-                const cleanedCookie = cookie;
-                if (cleanedCookie.path.includes("%2F")) {
-                    cleanedCookie.path = decodeURIComponent(cleanedCookie.path)
-                } 
-                cookies.push(cleanedCookie);
-            }
+            if (cookie.name === "") return cookies;
+            const cleanedCookie = {...cookie};
+            if (cleanedCookie.path.includes("%2F")) {
+                cleanedCookie.path = decodeURIComponent(cleanedCookie.path)
+            } 
+            cookies.push(cleanedCookie);
             return cookies;
         }, [])
         try {
             await this.Network.setCookies({cookies: cleanedCookies});
         } catch (error) {
-            throw new Error (`Could not set cookies. error: ${JSON.stringify(error)} cookies: ${JSON.stringify(cleandCookies)}`)
+            console.error({cleanedCookies, error: error.message});
+            throw error
         }
     }
 }
