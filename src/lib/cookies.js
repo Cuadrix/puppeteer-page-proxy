@@ -119,8 +119,8 @@ class CookieHandler extends CDP {
         try {
             await this.Network.setCookies({cookies: cleanedCookies});
         } catch (error) {
-            console.error({cleanedCookies, error: error.message});
-            throw error
+            console.error("Could not set cookies.", {cleanedCookies, error: error.message});
+            throw error;
         }
     }
 }
