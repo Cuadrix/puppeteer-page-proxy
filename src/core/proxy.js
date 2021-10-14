@@ -12,7 +12,7 @@ const requestHandler = async (request, proxy, overrides = {}) => {
     const cookieHandler = new CookieHandler(request);
     // Request options for Got accounting for overrides
     const options = {
-        cookieJar: await cookieHandler.getCookies(),
+        // cookieJar: await cookieHandler.getCookies(),
         method: overrides.method || request.method(),
         body: overrides.postData || request.postData(),
         headers: overrides.headers || setHeaders(request),
