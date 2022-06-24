@@ -1,7 +1,5 @@
 class CDP {
-    
     constructor(client) {
-        client = typeof client === "function" ? client() : client;
         // Network domain: https://chromedevtools.github.io/devtools-protocol/1-3/Network/
         this.Network = {
             async getCookies(urls) {
