@@ -63,7 +63,7 @@ const formatCookie = (cookie) => {
 // Responsible for getting and setting browser cookies
 class CookieHandler extends CDP {
     constructor(request) {
-        super(request._client);
+        super(request._client || request.client);
         this.url = request.isNavigationRequest() ? request.url() : request.frame().url();
         this.domain = new URL(this.url).hostname;
     }
