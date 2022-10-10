@@ -64,8 +64,11 @@ const formatCookie = (cookie) => {
 class CookieHandler extends CDP {
     constructor(request) {
         super(request._client || request.client);
-        this.url = request.isNavigationRequest() ? request.url() : request.frame().url();
-        this.domain = new URL(this.url).hostname;
+        this.url =
+            (request.isNavigationRequest() || request.frame() == null)
+            ? request.url()
+            : request.frame().url();
+        this.domain = (this.url) ? new URL(this.url).hostname : "";
     }
     // Parse an array of raw cookies to an array of cookie objects
     parseCookies(rawCookies) {
@@ -85,7 +88,7 @@ class CookieHandler extends CDP {
         const toughCookies = this.formatCookies(browserCookies);
         // Add cookies to cookieJar
         const cookieJar = CookieJar.deserializeSync({
-                version: 'tough-cookie@4.0.0',
+                version: 'tough-cookie@4.1.2',
                 storeType: 'MemoryCookieStore',
                 rejectPublicSuffixes: true,
                 cookies: toughCookies

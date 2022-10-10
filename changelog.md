@@ -1,4 +1,12 @@
 # Change log
+### [1.2.9] - 2022-10-10
+#### Fixes
+- Allow ports in request url for `host` request header ([#61](https://github.com/Cuadrix/puppeteer-page-proxy/issues/61)) ([#62](https://github.com/Cuadrix/puppeteer-page-proxy/pull/62))
+- Take into account how `CDPSession` client is exposed in latest versions of Puppeteer ([#78](https://github.com/Cuadrix/puppeteer-page-proxy/issues/78)) ([#79](https://github.com/Cuadrix/puppeteer-page-proxy/pull/79))
+- Allow domain cookies to be unset ([#48](https://github.com/Cuadrix/puppeteer-page-proxy/issues/48)) ([#48#issuecomment-729802384](https://github.com/Cuadrix/puppeteer-page-proxy/issues/48#issuecomment-729802384))
+- Take into account that `request.frame()` might return `null` ([#36](https://github.com/Cuadrix/puppeteer-page-proxy/issues/36)) ([#43](https://github.com/Cuadrix/puppeteer-page-proxy/issues/43)) ([#59](https://github.com/Cuadrix/puppeteer-page-proxy/issues/59)) ([#36#issuecomment-814520620](https://github.com/Cuadrix/puppeteer-page-proxy/issues/36#issuecomment-814520620))
+- Update differentiation between page and http request objects for latest versions of Puppeteer (`Page` -> `CDPPage`)
+- Update `lookup` method for latest versions of Puppeteer
 ### [1.2.8] - 2020-07-21
 #### Changes
 - Fixed silent failure when there was an invalid host in the cookies set by the server ([#32](https://github.com/Cuadrix/puppeteer-page-proxy/issues/32))
