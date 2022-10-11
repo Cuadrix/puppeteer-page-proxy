@@ -1,7 +1,11 @@
+![npm](https://img.shields.io/npm/v/puppeteer-page-proxy?style=flat-square)
+![node-current](https://img.shields.io/node/v/puppeteer?style=flat-square)
+![npm](https://img.shields.io/npm/dt/puppeteer-page-proxy?style=flat-square)
+
 # puppeteer-page-proxy <img src="https://i.ibb.co/kQrN9QJ/puppeteer-page-proxy-logo.png" align="right" width="150" height="150">
 Additional Node.js module to use with **[puppeteer](https://www.npmjs.com/package/puppeteer)** for setting proxies per page basis.
 
-Forwards intercepted requests from the browser to Node.js where it handles the request then returns the response to the browser, changing the proxy as a result.
+Forwards intercepted requests from the browser to Node.js where it redoes the requests through a proxy and then returns the response to the browser.
 
 ## Features
 
@@ -15,16 +19,16 @@ Forwards intercepted requests from the browser to Node.js where it handles the r
 npm i puppeteer-page-proxy
 ```
 ## API
-#### PageProxy(pageOrReq, proxy)
+#### useProxy(pageOrReq, proxy)
 
 - `pageOrReq` <[object](https://developer.mozilla.org/en-US/docs/Glossary/Object)> 'Page' or 'Request' object to set a proxy for.
 - `proxy` <[string](https://developer.mozilla.org/en-US/docs/Glossary/String)|[object](https://developer.mozilla.org/en-US/docs/Glossary/Object)> Proxy to use in the current page.
   * Begins with a protocol (e.g. http://, https://, socks://)
   * In the case of [proxy per request](https://github.com/Cuadrix/puppeteer-page-proxy#proxy-per-request), this can be an object with optional properties for overriding requests:\
 `url`, `method`, `postData`, `headers`\
-See [httpRequest.continue](https://github.com/puppeteer/puppeteer/blob/main/docs/api.md#httprequestcontinueoverrides) for more info about the above properties.
+See [ContinueRequestOverrides](https://pptr.dev/api/puppeteer.continuerequestoverrides) for more info about the above properties.
   
-#### PageProxy.lookup(page[, lookupService, isJSON, timeout])
+#### useProxy.lookup(page[, lookupService, isJSON, timeout])
 
 - `page` <[object](https://developer.mozilla.org/en-US/docs/Glossary/Object)> 'Page' object to execute the request on.
 - `lookupService` <[string](https://developer.mozilla.org/en-US/docs/Glossary/String)> External lookup service to request data from.
@@ -59,9 +63,9 @@ page.on('request', async request => {
     await useProxy(request, 'https://127.0.0.1:443');
 });
 ```
-The request object itself is passed as the first argument. The proxy can now be changed every request.
+The request object itself is passed as the first argument. The individual request will be tunneled through the specified proxy.
 
-Using it along with other interception methods:
+Using it together with other interception methods:
 ```js
 await page.setRequestInterception(true);
 page.on('request', async request => {
@@ -89,7 +93,7 @@ page.on('request', async request => {
 });
 ```
 
-**NOTE:** It is necessary to set [page.setRequestInterception](https://github.com/puppeteer/puppeteer/blob/main/docs/api.md#pagesetrequestinterceptionvalue) to true when setting proxies per request, otherwise the function will fail.
+**NOTE:** It's necessary to set [Page.setRequestInterception()](https://pptr.dev/api/puppeteer.page.setrequestinterception) to true when setting proxies per request, otherwise the function will fail.
 
 #### Authenticating:
 ```js
@@ -121,7 +125,7 @@ It takes over the task of requesting content **from** the browser to do it inter
 
 #### Why am I getting _"Request is already handled!"_?
 
-This happens when there is an attempt to handle the same request more than once. An intercepted request is handled by either [httpRequest.abort](https://github.com/puppeteer/puppeteer/blob/main/docs/api.md#httprequestaborterrorcode), [httpRequest.continue](https://github.com/puppeteer/puppeteer/blob/main/docs/api.md#httprequestcontinueoverrides) or [httpRequest.respond](https://github.com/puppeteer/puppeteer/blob/main/docs/api.md#httprequestrespondresponse) methods. Each of these methods 'send' the request to its destination. A request that has already reached its destination cannot be intercepted or handled.
+This happens when there is an attempt to handle the same request more than once. An intercepted request is handled by either [HTTPRequest.abort()](https://pptr.dev/api/puppeteer.httprequest.abort), [HTTPRequest.continue()](https://pptr.dev/api/puppeteer.httprequest.continue) or [HTTPRequest.respond()](https://pptr.dev/api/puppeteer.httprequest.respond) methods. Each of these methods 'send' the request to its destination. A request that has already reached its destination cannot be intercepted or handled.
 
 
 #### Why does the browser show _"Your connection to this site is not secure"_?
@@ -141,7 +145,7 @@ connection: TLSSocket {
     encrypted: true,
 }
 ```
-You can think of the warning as a false positive.
+The warning can be thought of as a false positive.
 
 ## Dependencies
 - [Got](https://github.com/sindresorhus/got)
