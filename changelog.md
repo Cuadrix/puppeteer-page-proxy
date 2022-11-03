@@ -1,4 +1,9 @@
 # Change log
+### [1.3.0] - 2022-11-03
+#### Changes
+- Update readme
+- Update code for v6.2.0 of "socks-proxy-agent"
+# Change log
 ### [1.2.9] - 2022-10-10
 #### Fixes
 - Allow ports in request url for `host` request header ([#61](https://github.com/Cuadrix/puppeteer-page-proxy/issues/61)) ([#62](https://github.com/Cuadrix/puppeteer-page-proxy/pull/62))
