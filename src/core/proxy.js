@@ -45,7 +45,7 @@ const requestHandler = async (request, proxy, overrides = {}) => {
 // For reassigning proxy of page
 const removeRequestListener = (page, listenerName) => {
     const eventName = "request";
-    const listeners = page.eventsMap.get(eventName);
+    const listeners = page.eventsMap && page.eventsMap.get(eventName);
     if (listeners) {
         const i = listeners.findIndex((listener) => {
             return listener.name === listenerName
