@@ -38,6 +38,9 @@ const requestHandler = async (request, proxy, overrides = {}) => {
             body: response.body
         });
     } catch (error) {
+        //If the request is being handled by other handlers then do not abort
+        // Related to Issues #89
+        if (request.isInterceptResolutionHandled()) return;
         await request.abort();
     }
 };
