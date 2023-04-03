@@ -10,6 +10,11 @@ const requestHandler = async (request, proxy, overrides = {}) => {
         request.continue(); return;
     }
     const cookieHandler = new CookieHandler(request);
+    let retry = 1;
+    if (overrides.retry === 0 || overrides.retry) {
+      retry = overrides.retry
+    }
+
     // Request options for GOT accounting for overrides
     const options = {
         cookieJar: await cookieHandler.getCookies(),
@@ -21,7 +26,9 @@ const requestHandler = async (request, proxy, overrides = {}) => {
         maxRedirects: 15,
         throwHttpErrors: false,
         ignoreInvalidCookies: true,
-        followRedirect: false
+        followRedirect: false,
+        retry: retry
+
     };
     try {
         const response = await got(overrides.url || request.url(), options);
@@ -75,12 +82,23 @@ const useProxyPer = {
     },
 
     // Call this if page object passed
-    CDPPage: async (page, proxy) => {
+    CDPPage: async (page, data) => {
         await page.setRequestInterception(true);
         const listener = "$ppp_requestListener";
         removeRequestListener(page, listener);
+        let proxy, overrides;
+        // Separate proxy and overrides
+        if (type(data) === "object") {
+            if (Object.keys(data).length !== 0) {
+                proxy = data.proxy;
+                delete data.proxy;
+                overrides = data;
+            }
+        } else {
+          proxy = data
+        }
         const f = {[listener]: async (request) => {
-            await requestHandler(request, proxy);
+            await requestHandler(request, proxy, overrides);
         }};
         if (proxy) {page.on("request", f[listener])}
         else {await page.setRequestInterception(false)}
